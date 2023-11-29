@@ -6,27 +6,31 @@ package cmd
 import (
 	"os"
 
+	"github.com/sknoww/sknowR/request"
 	"github.com/spf13/cobra"
 )
 
-var RootCmd = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:   "sknowR",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-}
-
-func Execute() {
-	err := RootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+	Short: "A CLI tool for making HTTP requests written in Go",
+	Long: `A CLI tool for making HTTP requests written in Go. 
+	Requests can be passed in using .json files. Response body 
+	is written to stdout and response headers and status are 
+	written to stderr by default. You can add the -o flag to 
+	specify and output file.`,
+	Run: request.ParseRequest,
 }
 
 func init() {
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVarP(&request.NewRequest.Filepath, "filepath", "f", "", "The path to the request file")
+	rootCmd.MarkPersistentFlagRequired("filepath")
+
+	rootCmd.Flags().StringVarP(&request.NewRequest.OutputFilePath, "output", "o", "", "The path to the output file (optional)")
+}
+
+func Execute() {
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
 }

@@ -5,8 +5,6 @@ package main
 
 import (
 	"github.com/sknoww/sknowR/cmd"
-
-	_ "github.com/sknoww/sknowR/methods"
 )
 
 func main() {
