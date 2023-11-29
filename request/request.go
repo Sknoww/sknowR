@@ -23,6 +23,12 @@ type HttpRequest struct {
 	Body    string            `json:"body"`
 }
 
+type HttpResponse struct {
+	StatusCode  int    `json:"statusCode"`
+	ContentType string `json:"contentType"`
+	Body        string `json:"body"`
+}
+
 var NewRequest InputRequest
 
 func ParseRequest(cmd *cobra.Command, args []string) {
@@ -51,35 +57,43 @@ func makeHttpRequest(newRequest *HttpRequest) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	for key, value := range newRequest.Headers {
 		request.Header.Set(key, value)
 	}
 
 	client := &http.Client{}
-	response, err := client.Do(request)
+	rawResponse, err := client.Do(request)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	responseBody, err := io.ReadAll(response.Body)
+	var response HttpResponse
+	response.StatusCode = rawResponse.StatusCode
 
+	response.ContentType = rawResponse.Header.Get("Content-Type")
+	if response.ContentType != "application/json" {
+		fmt.Println("Response is not json")
+	}
+
+	responseBody, err := io.ReadAll(rawResponse.Body)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	formattedResponseBody := formatJSON(responseBody)
+	formattedResponseBody := formatResponse(responseBody)
 
-	fmt.Println(response.Status)
+	fmt.Println(rawResponse.Status)
 	fmt.Println(formattedResponseBody)
 
 }
 
 // Helpers //
 
-// formatJSON formats the json response body
-func formatJSON(data []byte) string {
+// formatResponse formats the json response body
+func formatResponse(data []byte) string {
 	var out bytes.Buffer
 	err := json.Indent(&out, data, "", " ")
 
