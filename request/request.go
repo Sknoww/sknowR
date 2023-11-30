@@ -24,10 +24,10 @@ type HttpRequest struct {
 }
 
 type HttpResponse struct {
-	StatusCode  int               `json:"statusCode"`
+	StatusCode  int               `yaml:"status.code" json:"statusCode"`
 	ContentType string            `json:"contentType"`
 	Headers     map[string]string `json:"headers"`
-	Body        string            `json:"body"`
+	Body        json.RawMessage   `json:"body"`
 }
 
 var NewRequest InputRequest
@@ -107,20 +107,12 @@ func parseResponse(response *http.Response) *HttpResponse {
 		formattedResponse.Headers[k] = v[0]
 	}
 
-	responseBody, err := io.ReadAll(response.Body)
+	var err error
+	formattedResponse.Body, err = io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	var out bytes.Buffer
-	err = json.Indent(&out, responseBody, "", " ")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	d := out.Bytes()
-	formattedResponse.Body = string(d)
 
 	return &formattedResponse
 }

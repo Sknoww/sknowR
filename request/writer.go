@@ -37,7 +37,7 @@ func OutputResponseToFile(response *HttpResponse) {
 		os.Exit(1)
 	}
 
-	_, err = f.WriteString(string(b))
+	err = os.WriteFile(NewRequest.OutputFilePath, b, 0644)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

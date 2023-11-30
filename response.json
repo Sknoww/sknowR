@@ -5,9 +5,13 @@
     "Access-Control-Allow-Origin": "*",
     "Cache-Control": "private",
     "Content-Type": "application/json",
-    "Date": "Thu, 30 Nov 2023 01:22:42 GMT",
+    "Date": "Thu, 30 Nov 2023 04:40:50 GMT",
     "Server": "Google Frontend",
-    "X-Cloud-Trace-Context": "e039a0f25a72424f10a206192014da53"
+    "X-Cloud-Trace-Context": "b30435767eb04c24c57b98a95f4ec6f5"
   },
-  "body": "{\n \"ip\": \"24.9.46.178\"\n}\n"
+  "body": {
+    "date": "11-30-2023",
+    "milliseconds_since_epoch": 1701319250826,
+    "time": "04:40:50 AM"
+  }
 }
