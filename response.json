@@ -1,0 +1,13 @@
+{
+  "statusCode": 200,
+  "contentType": "application/json",
+  "headers": {
+    "Access-Control-Allow-Origin": "*",
+    "Cache-Control": "private",
+    "Content-Type": "application/json",
+    "Date": "Thu, 30 Nov 2023 01:22:42 GMT",
+    "Server": "Google Frontend",
+    "X-Cloud-Trace-Context": "e039a0f25a72424f10a206192014da53"
+  },
+  "body": "{\n \"ip\": \"24.9.46.178\"\n}\n"
+}

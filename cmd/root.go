@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
 	is written to stdout and response headers and status are 
 	written to stderr by default. You can add the -o flag to 
 	specify and output file.`,
-	Run: request.ParseRequest,
+	Run: request.HandleNewRequest,
 }
 
 func init() {

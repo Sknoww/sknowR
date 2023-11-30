@@ -24,14 +24,39 @@ type HttpRequest struct {
 }
 
 type HttpResponse struct {
-	StatusCode  int    `json:"statusCode"`
-	ContentType string `json:"contentType"`
-	Body        string `json:"body"`
+	StatusCode  int               `json:"statusCode"`
+	ContentType string            `json:"contentType"`
+	Headers     map[string]string `json:"headers"`
+	Body        string            `json:"body"`
 }
 
 var NewRequest InputRequest
 
-func ParseRequest(cmd *cobra.Command, args []string) {
+func HandleNewRequest(cmd *cobra.Command, args []string) {
+	if NewRequest.Filepath != "" {
+		// Parse request file
+		parsedRequest := parseRequest(cmd, args)
+
+		// Execute http request
+		response := executeHttpRequest(parsedRequest)
+
+		// Format response
+		formattedResponse := parseResponse(response)
+
+		// Write response to file if the user provided a filepath
+		if NewRequest.OutputFilePath != "" {
+			OutputResponseToFile(formattedResponse)
+		} else {
+			// Write response to stdout and stderr (default)
+			OutputResponseBodyToStdout(formattedResponse)
+			OutputResponseHeadersToSterr(formattedResponse)
+		}
+
+	}
+}
+
+// parseRequest parses the json request file provided by the user
+func parseRequest(cmd *cobra.Command, args []string) *HttpRequest {
 	fmt.Println("Parsing request file...")
 	f, err := os.Open(NewRequest.Filepath)
 	if err != nil {
@@ -45,11 +70,11 @@ func ParseRequest(cmd *cobra.Command, args []string) {
 	var request HttpRequest
 	json.Unmarshal(byteValue, &request)
 
-	makeHttpRequest(&request)
-
+	return &request
 }
 
-func makeHttpRequest(newRequest *HttpRequest) {
+// executeHttpRequest executes the http request provided by the user
+func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 	fmt.Println("Making http request...")
 
 	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer([]byte(newRequest.Body)))
@@ -63,44 +88,39 @@ func makeHttpRequest(newRequest *HttpRequest) {
 	}
 
 	client := &http.Client{}
-	rawResponse, err := client.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	var response HttpResponse
-	response.StatusCode = rawResponse.StatusCode
-
-	response.ContentType = rawResponse.Header.Get("Content-Type")
-	if response.ContentType != "application/json" {
-		fmt.Println("Response is not json")
-	}
-
-	responseBody, err := io.ReadAll(rawResponse.Body)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	formattedResponseBody := formatResponse(responseBody)
-
-	fmt.Println(rawResponse.Status)
-	fmt.Println(formattedResponseBody)
-
+	return response
 }
 
-// Helpers //
+// parseResponse converts the reponse to a HttpResponse struct
+func parseResponse(response *http.Response) *HttpResponse {
+	var formattedResponse HttpResponse
+	formattedResponse.StatusCode = response.StatusCode
+	formattedResponse.ContentType = response.Header.Get("Content-Type")
+	formattedResponse.Headers = make(map[string]string)
+	for k, v := range response.Header {
+		formattedResponse.Headers[k] = v[0]
+	}
 
-// formatResponse formats the json response body
-func formatResponse(data []byte) string {
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	var out bytes.Buffer
-	err := json.Indent(&out, data, "", " ")
-
+	err = json.Indent(&out, responseBody, "", " ")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	d := out.Bytes()
-	return string(d)
+	formattedResponse.Body = string(d)
+
+	return &formattedResponse
 }
