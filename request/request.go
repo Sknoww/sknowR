@@ -11,11 +11,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// InputRequest is the struct that is used to store the user input
 type InputRequest struct {
 	Filepath       string
 	OutputFilePath string
 }
 
+// NewRequest is the variable that is used to store the user input
+var NewRequest InputRequest
+
+// HttpRequest is the struct that is used to format the request
 type HttpRequest struct {
 	Method  string            `json:"method"`
 	Url     string            `json:"url"`
@@ -23,6 +28,7 @@ type HttpRequest struct {
 	Body    string            `json:"body"`
 }
 
+// HttpResponse is the struct that is used to format the response
 type HttpResponse struct {
 	StatusCode  int               `yaml:"status.code" json:"statusCode"`
 	ContentType string            `json:"contentType"`
@@ -30,9 +36,10 @@ type HttpResponse struct {
 	Body        json.RawMessage   `json:"body"`
 }
 
-var NewRequest InputRequest
-
+// HandleNewRequest handles input request
 func HandleNewRequest(cmd *cobra.Command, args []string) {
+
+	// Check if user provided a filepath
 	if NewRequest.Filepath != "" {
 		// Parse request file
 		parsedRequest := parseRequest(cmd, args)
@@ -52,12 +59,17 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 			OutputResponseHeadersToSterr(formattedResponse)
 		}
 
+	} else {
+		// Exit if no filepath provided
+		fmt.Println("No request filepath provided")
+		os.Exit(1)
 	}
 }
 
 // parseRequest parses the json request file provided by the user
 func parseRequest(cmd *cobra.Command, args []string) *HttpRequest {
-	fmt.Println("Parsing request file...")
+
+	// Open request file
 	f, err := os.Open(NewRequest.Filepath)
 	if err != nil {
 		fmt.Println(err)
@@ -65,8 +77,10 @@ func parseRequest(cmd *cobra.Command, args []string) *HttpRequest {
 	}
 	defer f.Close()
 
+	// Read request file
 	byteValue, _ := io.ReadAll(f)
 
+	// Parse request file
 	var request HttpRequest
 	json.Unmarshal(byteValue, &request)
 
@@ -75,18 +89,20 @@ func parseRequest(cmd *cobra.Command, args []string) *HttpRequest {
 
 // executeHttpRequest executes the http request provided by the user
 func executeHttpRequest(newRequest *HttpRequest) *http.Response {
-	fmt.Println("Making http request...")
 
+	// Create http request
 	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer([]byte(newRequest.Body)))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	// Add headers to request
 	for key, value := range newRequest.Headers {
 		request.Header.Set(key, value)
 	}
 
+	// Execute request
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
@@ -99,20 +115,26 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 
 // parseResponse converts the reponse to a HttpResponse struct
 func parseResponse(response *http.Response) *HttpResponse {
-	var formattedResponse HttpResponse
-	formattedResponse.StatusCode = response.StatusCode
-	formattedResponse.ContentType = response.Header.Get("Content-Type")
-	formattedResponse.Headers = make(map[string]string)
-	for k, v := range response.Header {
-		formattedResponse.Headers[k] = v[0]
-	}
 
-	var err error
-	formattedResponse.Body, err = io.ReadAll(response.Body)
+	// Read response body
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	return &formattedResponse
+	// Create HttpResponse struct
+	fResponse := &HttpResponse{
+		StatusCode:  response.StatusCode,
+		ContentType: response.Header.Get("Content-Type"),
+		Headers:     make(map[string]string),
+		Body:        responseBody,
+	}
+
+	// Convert response headers to map
+	for k, v := range response.Header {
+		fResponse.Headers[k] = v[0]
+	}
+
+	return fResponse
 }

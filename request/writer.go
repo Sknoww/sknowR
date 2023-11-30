@@ -22,7 +22,8 @@ func OutputResponseHeadersToSterr(response *HttpResponse) {
 
 // OutputResponseToFile writes the response to a file if the user provided a filepath
 func OutputResponseToFile(response *HttpResponse) {
-	fmt.Println("Writing response to file...")
+
+	// Create output file
 	f, err := os.Create(NewRequest.OutputFilePath)
 	if err != nil {
 		fmt.Println(err)
@@ -30,6 +31,8 @@ func OutputResponseToFile(response *HttpResponse) {
 	}
 	defer f.Close()
 
+	// Marshal response struct to bytes for writing to file
+	// Adds indentation to json
 	b, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
 		fmt.Println("1")
@@ -37,7 +40,8 @@ func OutputResponseToFile(response *HttpResponse) {
 		os.Exit(1)
 	}
 
-	err = os.WriteFile(NewRequest.OutputFilePath, b, 0644)
+	// Write response to file
+	_, err = f.WriteString(string(b))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
