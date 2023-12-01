@@ -71,6 +71,7 @@ func parseRequest(newRequest InputRequest) *HttpRequest {
 	// Open request file
 	f, err := os.Open(newRequest.Filepath)
 	if err != nil {
+		fmt.Println("Error opening request file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -92,6 +93,7 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 	// Create http request
 	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer([]byte(newRequest.Body)))
 	if err != nil {
+		fmt.Println("Error creating http request")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -102,9 +104,10 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 	}
 
 	// Execute request
-	client := &clientWrapper{client: &http.Client{}}
+	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
+		fmt.Println("Error executing http request")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -118,6 +121,7 @@ func parseResponse(response *http.Response) *HttpResponse {
 	// Read response body
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
+		fmt.Println("Error reading response body")
 		fmt.Println(err)
 		os.Exit(1)
 	}

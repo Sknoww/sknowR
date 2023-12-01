@@ -32,7 +32,7 @@ func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
 	// Adds indentation to json
 	b, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
-		fmt.Println("1")
+		fmt.Println("Error marshalling response to json")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -40,6 +40,7 @@ func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
 	// Write response to file
 	_, err = f.WriteString(string(b))
 	if err != nil {
+		fmt.Println("Error writing response to file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
