@@ -22,10 +22,10 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&request.NewRequest.Filepath, "filepath", "f", "", "The path to the request file")
+	rootCmd.PersistentFlags().StringP("filepath", "f", "", "The path to the request file")
 	rootCmd.MarkPersistentFlagRequired("filepath")
 
-	rootCmd.Flags().StringVarP(&request.NewRequest.OutputFilePath, "output", "o", "", "The path to the output file (optional)")
+	rootCmd.Flags().StringP("output", "o", "", "The path to the output file (optional)")
 }
 
 func Execute() {

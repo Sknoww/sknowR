@@ -8,23 +8,21 @@ import (
 
 // OutputResponseBodyToStdout writes the response body to stdout (default)
 func OutputResponseBodyToStdout(response *HttpResponse) {
-	fmt.Println("Writing response body to stdout...")
 	fmt.Printf("%s\n", response.Body)
 }
 
 // OutputResponseHeadersToSterr writes the response headers to stderr (default)
 func OutputResponseHeadersToSterr(response *HttpResponse) {
-	fmt.Println("Writing response headers to stderr...")
 	for k, v := range response.Headers {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", k, v)
 	}
 }
 
 // OutputResponseToFile writes the response to a file if the user provided a filepath
-func OutputResponseToFile(response *HttpResponse) {
+func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
 
 	// Create output file
-	f, err := os.Create(NewRequest.OutputFilePath)
+	f, err := os.Create(outputFilePath)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

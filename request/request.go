@@ -17,9 +17,6 @@ type InputRequest struct {
 	OutputFilePath string
 }
 
-// NewRequest is the variable that is used to store the user input
-var NewRequest InputRequest
-
 // HttpRequest is the struct that is used to format the request
 type HttpRequest struct {
 	Method  string            `json:"method"`
@@ -38,11 +35,14 @@ type HttpResponse struct {
 
 // HandleNewRequest handles input request
 func HandleNewRequest(cmd *cobra.Command, args []string) {
+	var newRequest InputRequest
+	newRequest.Filepath, _ = cmd.Flags().GetString("filepath")
+	newRequest.OutputFilePath, _ = cmd.Flags().GetString("output")
 
 	// Check if user provided a filepath
-	if NewRequest.Filepath != "" {
+	if newRequest.Filepath != "" {
 		// Parse request file
-		parsedRequest := parseRequest(cmd, args)
+		parsedRequest := parseRequest(newRequest)
 
 		// Execute http request
 		response := executeHttpRequest(parsedRequest)
@@ -51,8 +51,8 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 		formattedResponse := parseResponse(response)
 
 		// Write response to file if the user provided a filepath
-		if NewRequest.OutputFilePath != "" {
-			OutputResponseToFile(formattedResponse)
+		if newRequest.OutputFilePath != "" {
+			OutputResponseToFile(newRequest.OutputFilePath, formattedResponse)
 		} else {
 			// Write response to stdout and stderr (default)
 			OutputResponseBodyToStdout(formattedResponse)
@@ -67,10 +67,10 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 }
 
 // parseRequest parses the json request file provided by the user
-func parseRequest(cmd *cobra.Command, args []string) *HttpRequest {
+func parseRequest(newRequest InputRequest) *HttpRequest {
 
 	// Open request file
-	f, err := os.Open(NewRequest.Filepath)
+	f, err := os.Open(newRequest.Filepath)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
