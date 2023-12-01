@@ -6,13 +6,12 @@ import (
 	"os"
 )
 
-// OutputResponseBodyToStdout writes the response body to stdout (default)
-func OutputResponseBodyToStdout(response *HttpResponse) {
+// OutputResponseToStd writes the response body to stdout and stderr (default)
+func OutputResponseToStd(response *HttpResponse) {
+	// Write response body to stdout
 	fmt.Printf("%s\n", response.Body)
-}
 
-// OutputResponseHeadersToSterr writes the response headers to stderr (default)
-func OutputResponseHeadersToSterr(response *HttpResponse) {
+	// Write response headers to stderr
 	for k, v := range response.Headers {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", k, v)
 	}

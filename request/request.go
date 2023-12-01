@@ -55,8 +55,7 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 			OutputResponseToFile(newRequest.OutputFilePath, formattedResponse)
 		} else {
 			// Write response to stdout and stderr (default)
-			OutputResponseBodyToStdout(formattedResponse)
-			OutputResponseHeadersToSterr(formattedResponse)
+			OutputResponseToStd(formattedResponse)
 		}
 
 	} else {

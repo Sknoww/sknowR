@@ -9,56 +9,44 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func captureOutput(f func(response *HttpResponse), response *HttpResponse, isStdout bool) string {
-	var orig *os.File
-	if isStdout {
-		orig = os.Stdout
-	} else {
-		orig = os.Stderr
-	}
+func captureOutput(f func(response *HttpResponse), response *HttpResponse) (string, string) {
+	origStdout := os.Stdout
+	origStderr := os.Stderr
 
-	defer func(orig *os.File) {
-		if isStdout {
-			os.Stdout = orig
-		} else {
-			os.Stderr = orig
-		}
-	}(orig)
+	defer func() {
+		os.Stdout = origStdout
+		os.Stderr = origStderr
+	}()
 
-	r, w, _ := os.Pipe()
-	if isStdout {
-		os.Stdout = w
-	} else {
-		os.Stderr = w
-	}
+	rStdout, wStdout, _ := os.Pipe()
+	rStderr, wStderr, _ := os.Pipe()
+
+	os.Stdout = wStdout
+	os.Stderr = wStderr
+
 	f(response)
-	w.Close()
-	out, _ := io.ReadAll(r)
 
-	return string(out)
+	wStdout.Close()
+	wStderr.Close()
+
+	outStdout, _ := io.ReadAll(rStdout)
+	outStderr, _ := io.ReadAll(rStderr)
+
+	return string(outStdout), string(outStderr)
 }
 
-func TestOutputResponseBodyToStdout(t *testing.T) {
-	response := &HttpResponse{
-		StatusCode: 200,
-		Body:       []byte(`{"foo":"bar"}`),
-	}
-
-	output := captureOutput(OutputResponseBodyToStdout, response, true)
-
-	expected, _ := response.Body.MarshalJSON()
-	assert.Equal(t, string(expected)+"\n", output)
-}
-
-func TestOutputResponseHeadersToSterr(t *testing.T) {
+func TestOutputResponseToStd(t *testing.T) {
 	response := &HttpResponse{
 		StatusCode: 200,
 		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       []byte(`{"foo":"bar"}`),
 	}
 
-	output := captureOutput(OutputResponseHeadersToSterr, response, false)
+	stdOut, stdErr := captureOutput(OutputResponseToStd, response)
 
-	assert.Equal(t, "Content-Type: application/json\n", output)
+	expected, _ := response.Body.MarshalJSON()
+	assert.Equal(t, string(expected)+"\n", stdOut)
+	assert.Equal(t, "Content-Type: application/json\n", stdErr)
 }
 
 func TestOutputResponseToFile(t *testing.T) {
