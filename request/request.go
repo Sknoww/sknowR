@@ -27,7 +27,7 @@ type HttpRequest struct {
 
 // HttpResponse is the struct that is used to format the response
 type HttpResponse struct {
-	StatusCode  int               `yaml:"status.code" json:"statusCode"`
+	StatusCode  int               `json:"statusCode"`
 	ContentType string            `json:"contentType"`
 	Headers     map[string]string `json:"headers"`
 	Body        json.RawMessage   `json:"body"`
@@ -35,6 +35,7 @@ type HttpResponse struct {
 
 // HandleNewRequest handles input request
 func HandleNewRequest(cmd *cobra.Command, args []string) {
+	// Create new request struct
 	var newRequest InputRequest
 	newRequest.Filepath, _ = cmd.Flags().GetString("filepath")
 	newRequest.OutputFilePath, _ = cmd.Flags().GetString("output")
@@ -67,7 +68,6 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 
 // parseRequest parses the json request file provided by the user
 func parseRequest(newRequest InputRequest) *HttpRequest {
-
 	// Open request file
 	f, err := os.Open(newRequest.Filepath)
 	if err != nil {
@@ -89,7 +89,6 @@ func parseRequest(newRequest InputRequest) *HttpRequest {
 
 // executeHttpRequest executes the http request provided by the user
 func executeHttpRequest(newRequest *HttpRequest) *http.Response {
-
 	// Create http request
 	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer([]byte(newRequest.Body)))
 	if err != nil {
@@ -117,7 +116,6 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 
 // parseResponse converts the reponse to a HttpResponse struct
 func parseResponse(response *http.Response) *HttpResponse {
-
 	// Read response body
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {

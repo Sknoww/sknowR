@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 sknoww sknow.codes@gmail.com
 */
 package cmd
 
@@ -22,9 +22,11 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	// Add filepath flag
 	rootCmd.PersistentFlags().StringP("filepath", "f", "", "The path to the request file")
 	rootCmd.MarkPersistentFlagRequired("filepath")
 
+	// Add output flag
 	rootCmd.Flags().StringP("output", "o", "", "The path to the output file (optional)")
 }
 

@@ -19,7 +19,6 @@ func OutputResponseToStd(response *HttpResponse) {
 
 // OutputResponseToFile writes the response to a file if the user provided a filepath
 func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
-
 	// Create output file
 	f, err := os.Create(outputFilePath)
 	if err != nil {
