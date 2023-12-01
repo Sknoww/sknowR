@@ -77,7 +77,7 @@ sknowR -f example/folder/request.json > response.json 2>&1
 ### PUT
 ```json
 {
-    "url": "http://www.example.com/",
+    "url": "https://jsonplaceholder.typicode.com/posts/1",
     "method": "PUT",
     "headers": {
         "Content-Type": "application/json; charset=UTF-8"
