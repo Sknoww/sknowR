@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +20,28 @@ func TestParseRequest(t *testing.T) {
 	assert.Equal(t, "application/json", parsedRequest.Headers["Content-Type"])
 }
 
-// TODO: Test executeHttpRequest, need to mock http response
+func TestExecuteHttpRequest(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"foo": bar}`)
+	}))
+	defer svr.Close()
+
+	newRequest := &HttpRequest{
+		Method: "GET",
+		Url:    svr.URL,
+		Headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}
+
+	response := executeHttpRequest(newRequest)
+
+	assert.Equal(t, 200, response.StatusCode)
+	assert.Equal(t, "application/json", response.Header.Get("Content-Type"))
+	responseBody, _ := io.ReadAll(response.Body)
+	assert.Equal(t, `{"foo": bar}`, string(responseBody))
+}
 
 func TestParseResponse(t *testing.T) {
 	response := &http.Response{

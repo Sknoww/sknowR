@@ -103,7 +103,7 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 	}
 
 	// Execute request
-	client := &http.Client{}
+	client := &clientWrapper{client: &http.Client{}}
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println(err)
