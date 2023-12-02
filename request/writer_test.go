@@ -44,9 +44,10 @@ func TestOutputResponseToStd(t *testing.T) {
 
 	stdOut, stdErr := captureOutput(OutputResponseToStd, response)
 
-	expected, _ := response.Body.MarshalJSON()
-	assert.Equal(t, string(expected)+"\n", stdOut)
-	assert.Equal(t, "Content-Type: application/json\n", stdErr)
+	expectedBody, _ := json.MarshalIndent(response.Body, "", "  ")
+	assert.Equal(t, string(expectedBody)+"\n", stdOut)
+	expectedHeades, _ := json.MarshalIndent(response.Headers, "", "  ")
+	assert.Equal(t, string(expectedHeades)+"\n", stdErr)
 }
 
 func TestOutputResponseToFile(t *testing.T) {
@@ -76,4 +77,15 @@ func TestOutputResponseToFile(t *testing.T) {
 	t.Cleanup(func() {
 		os.Remove(outputFilePath)
 	})
+}
+
+func TestMarshalResponse(t *testing.T) {
+	response := &HttpResponse{
+		StatusCode: 200,
+		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       []byte(`{"foo":"bar"}`),
+	}
+
+	expected, _ := json.MarshalIndent(response, "", "  ")
+	assert.Equal(t, string(expected), string(marshalResponse(response)))
 }

@@ -8,17 +8,13 @@ import (
 
 // OutputResponseToStd writes the response body to stdout and stderr (default)
 func OutputResponseToStd(response *HttpResponse) {
-	// Write response body to stdout
-	fmt.Printf("%s\n", response.Body)
+	// Write response body to stdout in json format
+	b := marshalResponse(response.Body)
+	fmt.Printf("%s\n", string(b))
 
 	// Write response headers to stderr in json format
-	b, err := json.MarshalIndent(response.Headers, "", "  ")
-	if err != nil {
-		fmt.Println("Error marshalling response headers to json")
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Fprintf(os.Stderr, "%s\n", string(b))
+	h := marshalResponse(response.Headers)
+	fmt.Fprintf(os.Stderr, "%s\n", string(h))
 }
 
 // OutputResponseToFile writes the response to a file if the user provided a filepath
@@ -31,14 +27,8 @@ func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
 	}
 	defer f.Close()
 
-	// Marshal response struct to bytes for writing to file
-	// Adds indentation to json
-	b, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		fmt.Println("Error marshalling response to json")
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// Marshal response struct to bytes
+	b := marshalResponse(response)
 
 	// Write response to file
 	_, err = f.WriteString(string(b))
@@ -47,4 +37,17 @@ func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+// marshalResponse marshals any part of the response to json
+func marshalResponse(response interface{}) []byte {
+	// Marshal response struct to bytes for writing to file
+	// Adds indentation to json
+	b, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		fmt.Println("Error marshalling response to json")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return b
 }
