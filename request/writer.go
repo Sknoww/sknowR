@@ -11,10 +11,14 @@ func OutputResponseToStd(response *HttpResponse) {
 	// Write response body to stdout
 	fmt.Printf("%s\n", response.Body)
 
-	// Write response headers to stderr
-	for k, v := range response.Headers {
-		fmt.Fprintf(os.Stderr, "%s: %s\n", k, v)
+	// Write response headers to stderr in json format
+	b, err := json.MarshalIndent(response.Headers, "", "  ")
+	if err != nil {
+		fmt.Println("Error marshalling response headers to json")
+		fmt.Println(err)
+		os.Exit(1)
 	}
+	fmt.Fprintf(os.Stderr, "%s\n", string(b))
 }
 
 // OutputResponseToFile writes the response to a file if the user provided a filepath
