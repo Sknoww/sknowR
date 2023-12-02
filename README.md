@@ -9,15 +9,14 @@
 A CLI tool for making HTTP requests written in Go
 </pre>
 
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sknoww/sknowR@latest.svg)](https://pkg.go.dev/github.com/sknoww/sknowR@latest) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 </div>
 
 ## Installation
 
 ```sh
-go get TODO
+go install github.com/sknoww/sknowR@latest
 ```
 
 ## Usage
