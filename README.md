@@ -42,7 +42,8 @@ Output can be redirected to a file. The response body is written to stdout and s
 sknowR -f example/folder/request.json > response.json 2> response_headers.json
 ```
 This can also be done to the same file.
-#####Note: There are issues with this in powershell but it works in cmd/command prompt. Also, this must be a .txt file if writing both to the same file.
+
+#### Note: There are issues with this in powershell but it works in cmd/command prompt. Also, this must be a .txt file if writing to the same file.
 ```sh
 sknowR -f example/folder/request.json > response.txt 2>&1
 ```
@@ -56,7 +57,6 @@ sknowR -f example/folder/request.json > response.txt 2>&1
     "method": "GET",
 }
  ```
-### TODO: File Downloads
 
 ### POST
 ```json
