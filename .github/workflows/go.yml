@@ -14,12 +14,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: checkout project
+      uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.23'
+    - name: dynamically retrieve go version
+      uses: arnested/go-version-action@v1
+      id: go-version
+
+    - name: setup go ${{ steps.go-version.outputs.minimal }}
+      uses: actions/setup-go@v2
+      with: 
+        go-version: ${{ steps.go-version.outputs.minimal }}
 
     - name: Build
       run: go build -v ./...
