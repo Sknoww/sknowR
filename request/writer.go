@@ -8,11 +8,26 @@ import (
 
 // OutputResponseToStd writes the response body to stdout and stderr (default)
 func OutputResponseToStd(response *HttpResponse) {
+
 	// If content type is not json write response body to stdout
-	if response.Headers["Content-Type"] != "application/json" {
-		fmt.Printf("%s\n", response.Body)
+	if response.Headers["Content-Type"] == "application/pdf" {
+		// Write pdf to file
+		f, err := os.Create("output.pdf")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		defer f.Close()
+
+		// Write response body to file
+		_, err = f.Write(response.Body)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		return
 	}
+
 	// If content type is json, write response body to stdout in json format
 	// Write response body to stdout in json format
 	b := marshalResponse(response.Body)
