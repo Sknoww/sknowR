@@ -15,6 +15,7 @@ import (
 type InputRequest struct {
 	Filepath       string
 	OutputFilePath string
+	IsDownload     bool
 }
 
 // HttpRequest is the struct that is used to format the request
@@ -39,6 +40,7 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 	var newRequest InputRequest
 	newRequest.Filepath, _ = cmd.Flags().GetString("filepath")
 	newRequest.OutputFilePath, _ = cmd.Flags().GetString("output")
+	newRequest.IsDownload, _ = cmd.Flags().GetBool("download")
 
 	// Check if user provided a filepath
 	if newRequest.Filepath != "" {
@@ -47,6 +49,10 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 
 		// Execute http request
 		response := executeHttpRequest(parsedRequest)
+
+		// Check if user is downloading a file
+		if newRequest.IsDownload {
+		}
 
 		// Format response
 		formattedResponse := parseResponse(response)
@@ -116,6 +122,9 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 
 // parseResponse converts the reponse to a HttpResponse struct
 func parseResponse(response *http.Response) *HttpResponse {
+	// Close response body
+	defer response.Body.Close()
+
 	// Read response body
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {

@@ -18,6 +18,13 @@ var rootCmd = &cobra.Command{
 	is written to stdout and response headers and status are 
 	written to stderr by default. You can add the -o flag to 
 	specify and output file.`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		// Check if user is downloading a file
+		download, _ := cmd.Flags().GetBool("download")
+		if download {
+			cmd.MarkFlagRequired("output")
+		}
+	},
 	Run: request.HandleNewRequest,
 }
 
@@ -27,7 +34,10 @@ func init() {
 	rootCmd.MarkPersistentFlagRequired("filepath")
 
 	// Add output flag
-	rootCmd.Flags().StringP("output", "o", "", "The path to the output file (optional)")
+	rootCmd.Flags().StringP("output", "o", "", "The path to the output file (optional if not downloading a file)")
+
+	// Add download flag
+	rootCmd.Flags().BoolP("download", "d", false, "Download file (optional)")
 }
 
 func Execute() {
