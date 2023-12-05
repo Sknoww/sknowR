@@ -54,7 +54,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
 ```json
 {
     "url": "https://jsonplaceholder.typicode.com/posts",
-    "method": "GET",
+    "method": "GET"
 }
  ```
 
@@ -69,7 +69,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
     "body": {
         "title": "foo",
         "body": "bar",
-        "userId": 1,
+        "userId": 1
   }
 }
  ```
@@ -86,7 +86,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
         "id": 1,
         "title": "foo",
         "body": "bar",
-        "userId": 1,
+        "userId": 1
     }
 }
  ```
@@ -95,7 +95,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
 ```json
 {
     "url": "https://jsonplaceholder.typicode.com/posts/1",
-    "method": "DELETE",
+    "method": "DELETE"
 }
  ```
 
