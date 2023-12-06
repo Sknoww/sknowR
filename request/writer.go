@@ -4,17 +4,30 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // OutputResponseToStd writes the response body to stdout and stderr (default)
 func OutputResponseToStd(response *HttpResponse) {
-	// Write response body to stdout in json format
-	b := marshalResponse(response.Body)
-	fmt.Printf("%s\n", string(b))
+	// Write response status code to stderr
+	fmt.Fprintf(os.Stderr, "Status: %d\n", response.StatusCode)
 
 	// Write response headers to stderr in json format
 	h := marshalResponse(response.Headers)
 	fmt.Fprintf(os.Stderr, "%s\n", string(h))
+
+	// Convert response body to bytes
+	b := []byte(response.Body)
+
+	// Check if content type is json
+	if strings.Contains(response.Headers["Content-Type"], "application/json") {
+		// Marshal response struct to bytes
+		b = marshalResponse(response.Body)
+	}
+
+	// Write response body to stdout
+	os.Stdout.WriteString(string(b))
+
 }
 
 // OutputResponseToFile writes the response to a file if the user provided a filepath
@@ -27,8 +40,14 @@ func OutputResponseToFile(outputFilePath string, response *HttpResponse) {
 	}
 	defer f.Close()
 
-	// Marshal response struct to bytes
-	b := marshalResponse(response)
+	// Convert response body to bytes
+	b := []byte(response.Body)
+
+	// Check if content type is json
+	if strings.Contains(response.Headers["Content-Type"], "application/json") {
+		// Marshal response struct to bytes
+		b = marshalResponse(response)
+	}
 
 	// Write response to file
 	_, err = f.WriteString(string(b))

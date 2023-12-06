@@ -27,7 +27,7 @@ func init() {
 	rootCmd.MarkPersistentFlagRequired("filepath")
 
 	// Add output flag
-	rootCmd.Flags().StringP("output", "o", "", "The path to the output file (optional)")
+	rootCmd.Flags().StringP("output", "o", "", "The path to the output file (optional if not downloading a file)")
 }
 
 func Execute() {

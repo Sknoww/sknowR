@@ -48,15 +48,29 @@ This can also be done to the same file.
 sknowR -f example/folder/request.json > response.txt 2>&1
 ```
 
+## File Downloads
+You can also use sknowR to download files such as PDFs. However, you must specify an output file with the proper file extension.
+```sh
+sknowR -f example/folder/request.json -o response.pdf
+```
+
 ## Sample requests (`request.json`)
 
 ### GET
 ```json
 {
     "url": "https://jsonplaceholder.typicode.com/posts",
-    "method": "GET",
+    "method": "GET"
 }
  ```
+
+### GET (File Download)
+```json
+{
+    "url": "https://www.golang-book.com/public/pdf/gobook.pdf",
+    "method": "GET"
+}
+```
 
 ### POST
 ```json
@@ -69,7 +83,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
     "body": {
         "title": "foo",
         "body": "bar",
-        "userId": 1,
+        "userId": 1
   }
 }
  ```
@@ -86,7 +100,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
         "id": 1,
         "title": "foo",
         "body": "bar",
-        "userId": 1,
+        "userId": 1
     }
 }
  ```
@@ -95,7 +109,7 @@ sknowR -f example/folder/request.json > response.txt 2>&1
 ```json
 {
     "url": "https://jsonplaceholder.typicode.com/posts/1",
-    "method": "DELETE",
+    "method": "DELETE"
 }
  ```
 
