@@ -48,6 +48,12 @@ This can also be done to the same file.
 sknowR -f example/folder/request.json > response.txt 2>&1
 ```
 
+## File Downloads
+You can also use sknowR to download files such as PDFs. However, you must specify an output file with the proper file extension.
+```sh
+sknowR -f example/folder/request.json -o response.pdf
+```
+
 ## Sample requests (`request.json`)
 
 ### GET
@@ -57,6 +63,14 @@ sknowR -f example/folder/request.json > response.txt 2>&1
     "method": "GET"
 }
  ```
+
+### GET (File Download)
+```json
+{
+    "url": "https://www.golang-book.com/public/pdf/gobook.pdf",
+    "method": "GET"
+}
+```
 
 ### POST
 ```json

@@ -50,10 +50,6 @@ func HandleNewRequest(cmd *cobra.Command, args []string) {
 		// Execute http request
 		response := executeHttpRequest(parsedRequest)
 
-		// Check if user is downloading a file
-		if newRequest.IsDownload {
-		}
-
 		// Format response
 		formattedResponse := parseResponse(response)
 

@@ -45,9 +45,9 @@ func TestOutputResponseToStd(t *testing.T) {
 	stdOut, stdErr := captureOutput(OutputResponseToStd, response)
 
 	expectedBody, _ := json.MarshalIndent(response.Body, "", "  ")
-	assert.Equal(t, string(expectedBody)+"\n", stdOut)
+	assert.Equal(t, string(expectedBody), stdOut)
 	expectedHeades, _ := json.MarshalIndent(response.Headers, "", "  ")
-	assert.Equal(t, string(expectedHeades)+"\n", stdErr)
+	assert.Equal(t, "Status: 200\n"+string(expectedHeades)+"\n", stdErr)
 }
 
 func TestOutputResponseToFile(t *testing.T) {
