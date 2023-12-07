@@ -120,6 +120,7 @@ H. Sullivan - sknow.codes@gmail.com
 MIT License, reference `LICENSE` for details.
 
 ### Roadmap
+- Auth support
 - Html(.html) response support
 - Xml(.xml) response support
 - Yaml(.yaml) file support
