@@ -28,7 +28,7 @@ type HttpRequest struct {
 	Params  map[string]string      `json:"params" yaml:"params"`
 	Headers map[string]string      `json:"headers" yaml:"headers"`
 	Cookies map[string]string      `json:"cookies" yaml:"cookies"`
-	Data    map[string]interface{} `json:"data" yaml:"data"`
+	Body    map[string]interface{} `json:"body" yaml:"body"`
 }
 
 // HttpResponse is the struct that is used to format the response
@@ -126,8 +126,8 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 	// Marshal data to bytes for http request
 	var data []byte
 	var err error
-	if len(newRequest.Data) > 0 {
-		data, err = json.Marshal(newRequest.Data)
+	if len(newRequest.Body) > 0 {
+		data, err = json.Marshal(newRequest.Body)
 		if err != nil {
 			fmt.Println("Error marshalling data")
 			fmt.Println(err)
