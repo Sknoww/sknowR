@@ -9,8 +9,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 // InputRequest is the struct that is used to store the user input
@@ -23,12 +23,12 @@ type InputRequest struct {
 // HttpRequest is the struct that is used to format the request
 // Different versions needed for yaml and json due to body formatting
 type HttpRequest struct {
-	Method  string            `json:"method"`
-	Url     string            `json:"url"`
-	Params  map[string]string `json:"params"`
-	Headers map[string]string `json:"headers"`
-	Cookies map[string]string `json:"cookies"`
-	Data    string            `json:"data"`
+	Method  string                 `json:"method" yaml:"method"`
+	Url     string                 `json:"url" yaml:"url"`
+	Params  map[string]string      `json:"params" yaml:"params"`
+	Headers map[string]string      `json:"headers" yaml:"headers"`
+	Cookies map[string]string      `json:"cookies" yaml:"cookies"`
+	Data    map[string]interface{} `json:"data" yaml:"data"`
 }
 
 // HttpResponse is the struct that is used to format the response
@@ -93,19 +93,20 @@ func parseRequest(newRequest InputRequest) *HttpRequest {
 	// Check if file is yaml
 	ext := path.Ext(newRequest.Filepath)
 	if ext == ".yaml" || ext == ".yml" {
-		byteValue, err = yaml.YAMLToJSON(byteValue)
+		// Convert yaml to json
+		err = yaml.Unmarshal(byteValue, &request)
 		if err != nil {
 			fmt.Println("Error parsing yaml file")
 			fmt.Println(err)
 			os.Exit(1)
 		}
-	}
-	fmt.Println(string(byteValue))
-	err = json.Unmarshal(byteValue, &request)
-	if err != nil {
-		fmt.Println("Error parsing json file")
-		fmt.Println(err)
-		os.Exit(1)
+	} else {
+		err = json.Unmarshal(byteValue, &request)
+		if err != nil {
+			fmt.Println("Error parsing json file")
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	return &request
@@ -122,8 +123,20 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 		newRequest.Url = newRequest.Url[:len(newRequest.Url)-1]
 	}
 
+	// Marshal data to bytes for http request
+	var data []byte
+	var err error
+	if len(newRequest.Data) > 0 {
+		data, err = json.Marshal(newRequest.Data)
+		if err != nil {
+			fmt.Println("Error marshalling data")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
 	// Create http request
-	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer([]byte(newRequest.Data)))
+	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer(data))
 	if err != nil {
 		fmt.Println("Error creating http request")
 		fmt.Println(err)
