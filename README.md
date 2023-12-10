@@ -54,7 +54,7 @@ You can also use sknowR to download files such as PDFs. However, you must specif
 sknowR -f example/folder/request.json -o response.pdf
 ```
 
-## Sample requests (`request.json`)
+## Sample requests (`request.json / request.yaml`)
 
 ### GET
 ```json
@@ -63,13 +63,22 @@ sknowR -f example/folder/request.json -o response.pdf
     "method": "GET"
 }
  ```
+```yml
+url: https://jsonplaceholder.typicode.com/posts
+method: GET
+```
 
 ### GET (File Download)
+#### Note: Must specify an output file
 ```json
 {
     "url": "https://www.golang-book.com/public/pdf/gobook.pdf",
     "method": "GET"
 }
+```
+```yml
+url: https://www.golang-book.com/public/pdf/gobook.pdf
+method: GET
 ```
 
 ### POST
@@ -87,6 +96,16 @@ sknowR -f example/folder/request.json -o response.pdf
   }
 }
  ```
+```yml
+url: https://jsonplaceholder.typicode.com/posts
+method: POST
+headers:
+  Content-Type: application/json; charset=UTF-8
+body:
+  title: foo
+  body: bar
+  userId: 1
+```
 
 ### PUT
 ```json
@@ -104,6 +123,17 @@ sknowR -f example/folder/request.json -o response.pdf
     }
 }
  ```
+```yml
+url: https://jsonplaceholder.typicode.com/posts/1
+method: PUT
+headers:
+  Content-Type: application/json; charset=UTF-8
+body:
+  id: 1
+  title: foo
+  body: bar
+  userId: 1
+```
 
 ### DELETE
 ```json
@@ -112,6 +142,44 @@ sknowR -f example/folder/request.json -o response.pdf
     "method": "DELETE"
 }
  ```
+```yml
+url: https://jsonplaceholder.typicode.com/posts/1
+method: DELETE
+```
+
+### Request with all compatible fields
+```json
+{
+    "url": "XXX", # (REQUIRED)
+    "method": "XXX", # (REQUIRED)
+    "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "XXX"
+    },
+    "params": {
+        "XXX": "XXX"
+    },
+    "body": {
+        "XXX": "XXX"
+    },
+    "cookies": {
+        "XXX": "XXX"
+    }
+}
+```
+```yml
+url: XXX # (REQUIRED)
+method: XXX # (REQUIRED)
+headers:
+    Content-Type: application/json
+    Authorization: XXX
+params:
+    XXX: XXX
+body:
+    XXX: XXX
+cookies:
+    XXX: XXX
+```
 
 ### Metadata
 H. Sullivan - sknow.codes@gmail.com
@@ -120,7 +188,5 @@ H. Sullivan - sknow.codes@gmail.com
 MIT License, reference `LICENSE` for details.
 
 ### Roadmap
-- File downloads
 - Html(.html) response support
 - Xml(.xml) response support
-- Yaml(.yaml) file support

@@ -7,8 +7,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 // InputRequest is the struct that is used to store the user input
@@ -19,11 +21,14 @@ type InputRequest struct {
 }
 
 // HttpRequest is the struct that is used to format the request
+// Different versions needed for yaml and json due to body formatting
 type HttpRequest struct {
-	Method  string            `json:"method"`
-	Url     string            `json:"url"`
-	Headers map[string]string `json:"headers"`
-	Body    string            `json:"body"`
+	Method  string                 `json:"method" yaml:"method"`
+	Url     string                 `json:"url" yaml:"url"`
+	Params  map[string]string      `json:"params" yaml:"params"`
+	Headers map[string]string      `json:"headers" yaml:"headers"`
+	Cookies map[string]string      `json:"cookies" yaml:"cookies"`
+	Body    map[string]interface{} `json:"body" yaml:"body"`
 }
 
 // HttpResponse is the struct that is used to format the response
@@ -84,15 +89,54 @@ func parseRequest(newRequest InputRequest) *HttpRequest {
 
 	// Parse request file
 	var request HttpRequest
-	json.Unmarshal(byteValue, &request)
+
+	// Check if file is yaml
+	ext := path.Ext(newRequest.Filepath)
+	if ext == ".yaml" || ext == ".yml" {
+		// Convert yaml to json
+		err = yaml.Unmarshal(byteValue, &request)
+		if err != nil {
+			fmt.Println("Error parsing yaml file")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	} else {
+		err = json.Unmarshal(byteValue, &request)
+		if err != nil {
+			fmt.Println("Error parsing json file")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
 
 	return &request
 }
 
 // executeHttpRequest executes the http request provided by the user
 func executeHttpRequest(newRequest *HttpRequest) *http.Response {
+	// Add params to url if provided
+	if len(newRequest.Params) > 0 {
+		newRequest.Url += "?"
+		for key, value := range newRequest.Params {
+			newRequest.Url += key + "=" + value + "&"
+		}
+		newRequest.Url = newRequest.Url[:len(newRequest.Url)-1]
+	}
+
+	// Marshal data to bytes for http request
+	var data []byte
+	var err error
+	if len(newRequest.Body) > 0 {
+		data, err = json.Marshal(newRequest.Body)
+		if err != nil {
+			fmt.Println("Error marshalling data")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
 	// Create http request
-	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer([]byte(newRequest.Body)))
+	request, err := http.NewRequest(newRequest.Method, newRequest.Url, bytes.NewBuffer(data))
 	if err != nil {
 		fmt.Println("Error creating http request")
 		fmt.Println(err)
@@ -102,6 +146,11 @@ func executeHttpRequest(newRequest *HttpRequest) *http.Response {
 	// Add headers to request
 	for key, value := range newRequest.Headers {
 		request.Header.Set(key, value)
+	}
+
+	// Add cookies to request
+	for key, value := range newRequest.Cookies {
+		request.AddCookie(&http.Cookie{Name: key, Value: value})
 	}
 
 	// Execute request

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseRequest(t *testing.T) {
+func TestParseRequestJSON(t *testing.T) {
 	var newRequest InputRequest
 	newRequest.Filepath = "../test/testRequest.json"
 	parsedRequest := parseRequest(newRequest)
@@ -18,6 +18,18 @@ func TestParseRequest(t *testing.T) {
 	assert.Equal(t, "GET", parsedRequest.Method)
 	assert.Equal(t, "http://www.example.com/", parsedRequest.Url)
 	assert.Equal(t, "application/json", parsedRequest.Headers["Content-Type"])
+	assert.Equal(t, "bar", parsedRequest.Params["foo"])
+}
+
+func TestParseRequestYAML(t *testing.T) {
+	var newRequest InputRequest
+	newRequest.Filepath = "../test/testRequest.yaml"
+	parsedRequest := parseRequest(newRequest)
+
+	assert.Equal(t, "GET", parsedRequest.Method)
+	assert.Equal(t, "http://www.example.com/", parsedRequest.Url)
+	assert.Equal(t, "application/json", parsedRequest.Headers["Content-Type"])
+	assert.Equal(t, "bar", parsedRequest.Params["foo"])
 }
 
 func TestExecuteHttpRequest(t *testing.T) {
