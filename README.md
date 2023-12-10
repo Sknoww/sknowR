@@ -57,7 +57,7 @@ sknowR -f example/folder/request.json -o response.pdf
 ## Sample requests (`request.json / request.yaml`)
 
 ### GET
-```json
+```js
 {
     "url": "https://jsonplaceholder.typicode.com/posts",
     "method": "GET"
@@ -70,7 +70,7 @@ method: GET
 
 ### GET (File Download)
 #### Note: Must specify an output file
-```json
+```js
 {
     "url": "https://www.golang-book.com/public/pdf/gobook.pdf",
     "method": "GET"
@@ -82,7 +82,7 @@ method: GET
 ```
 
 ### POST
-```json
+```js
 {
     "url": "https://jsonplaceholder.typicode.com/posts",
     "method": "POST",
@@ -108,7 +108,7 @@ body:
 ```
 
 ### PUT
-```json
+```js
 {
     "url": "https://jsonplaceholder.typicode.com/posts/1",
     "method": "PUT",
@@ -136,7 +136,7 @@ body:
 ```
 
 ### DELETE
-```json
+```js
 {
     "url": "https://jsonplaceholder.typicode.com/posts/1",
     "method": "DELETE"
@@ -148,10 +148,10 @@ method: DELETE
 ```
 
 ### Request with all compatible fields
-```json
+```js
 {
-    "url": "XXX", # (REQUIRED)
-    "method": "XXX", # (REQUIRED)
+    "url": "XXX", // (REQUIRED)
+    "method": "XXX", // (REQUIRED)
     "headers": {
         "Content-Type": "application/json",
         "Authorization": "XXX"
