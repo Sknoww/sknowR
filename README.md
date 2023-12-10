@@ -147,6 +147,40 @@ url: https://jsonplaceholder.typicode.com/posts/1
 method: DELETE
 ```
 
+### Request with all compatible fields
+```json
+{
+    "url": "XXX", # (REQUIRED)
+    "method": "XXX", # (REQUIRED)
+    "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "XXX"
+    },
+    "params": {
+        "XXX": "XXX"
+    },
+    "body": {
+        "XXX": "XXX"
+    },
+    "cookies": {
+        "XXX": "XXX"
+    }
+}
+```
+```yml
+url: XXX # (REQUIRED)
+method: XXX # (REQUIRED)
+headers:
+    Content-Type: application/json
+    Authorization: XXX
+params:
+    XXX: XXX
+body:
+    XXX: XXX
+cookies:
+    XXX: XXX
+```
+
 ### Metadata
 H. Sullivan - sknow.codes@gmail.com
 
